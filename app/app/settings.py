@@ -8,7 +8,7 @@ SECRET_KEY = "dontusethisonproduction"
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["0.0.0.0"]
 
 
 # Application definition
@@ -21,6 +21,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "rest_framework.authtoken",
+    "user",
 ]
 
 MIDDLEWARE = [
@@ -86,3 +87,6 @@ MEDIA_URL = "/media/"
 
 MEDIA_ROOT = "/vol/web/media"
 STATIC_ROOT = "/vol/web/static"
+
+AUTH_USER_MODEL = "user.User"
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
