@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, timedelta
 
 from django.contrib.auth import get_user_model
 from django.test import TestCase
@@ -109,3 +109,23 @@ class PrivateMenusApiTests(TestCase):
 
         res = self.client.post(MENUS_URL, payload)
         self.assertNotEqual(res.status_code, status.HTTP_201_CREATED)
+
+    def test_retrieve_menu_for_specific_date(self):
+        """Test retriving menus for a single date"""
+        restaurant = sample_restaurant()
+        current_date = date.today()
+        previous_date = current_date - timedelta(1)
+
+        menu = Menu.objects.create(
+            name="Salad", serve_date=current_date, restaurant=restaurant
+        )
+        menu2 = Menu.objects.create(
+            name="Ramen", serve_date=previous_date, restaurant=restaurant
+        )
+
+        res = self.client.get(MENUS_URL, {"serve_date": current_date})
+
+        serializer1 = MenuSerializer(menu)
+        serializer2 = MenuSerializer(menu2)
+        self.assertIn(serializer1.data, res.data)
+        self.assertNotIn(serializer2.data, res.data)
