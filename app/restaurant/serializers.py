@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Menu, Restaurant
+from .models import Menu, Restaurant, Vote
 
 
 class RestaurantSerializer(serializers.ModelSerializer):
@@ -18,4 +18,15 @@ class MenuSerializer(serializers.ModelSerializer):
     class Meta:
         model = Menu
         fields = ("id", "name", "serve_date", "restaurant")
+        read_only_fields = ("id",)
+
+
+class VoteSerializer(serializers.ModelSerializer):
+    """Serialize a vote"""
+
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
+    class Meta:
+        model = Vote
+        fields = ("id", "menu", "user")
         read_only_fields = ("id",)

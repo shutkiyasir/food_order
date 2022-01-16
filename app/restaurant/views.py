@@ -1,11 +1,9 @@
-from datetime import datetime
-
 from rest_framework import generics, viewsets
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
 from . import serializers
-from .models import Menu, Restaurant
+from .models import Menu, Restaurant, Vote
 
 
 class RestaurantViewSet(viewsets.ModelViewSet):
@@ -30,6 +28,14 @@ class ListCreateMenuView(generics.ListCreateAPIView):
         serve_date = self.request.query_params.get("serve_date")
         queryset = self.queryset
         if serve_date:
-            serve_date = datetime.strptime(serve_date, "%Y-%m-%d").date()
             queryset = queryset.filter(serve_date=serve_date)
         return queryset.order_by("-name")
+
+
+class CreateVoteView(generics.CreateAPIView):
+    """Manage votes in the database"""
+
+    serializer_class = serializers.VoteSerializer
+    queryset = Vote.objects.all()
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)

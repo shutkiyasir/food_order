@@ -11,6 +11,12 @@ class Vote(models.Model):
     )
     menu = models.ForeignKey("Menu", on_delete=models.CASCADE)
 
+    class Meta:
+        unique_together = (
+            "user",
+            "menu",
+        )
+
     def __str__(self):
         return f"{self.user.email} {self.menu.name}"
 
