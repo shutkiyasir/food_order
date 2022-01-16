@@ -22,6 +22,12 @@ class Menu(models.Model):
     serve_date = models.DateField(help_text="Date on which the menu will be served")
     restaurant = models.ForeignKey("Restaurant", on_delete=models.CASCADE)
 
+    class Meta:
+        unique_together = (
+            "serve_date",
+            "restaurant",
+        )
+
     def __str__(self):
         return self.name
 
