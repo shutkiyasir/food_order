@@ -6,7 +6,6 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
 from restaurant.models import Menu, Restaurant, Vote
-from restaurant.serializers import VoteSerializer
 
 VOTES_URL = reverse("restaurant:vote")
 

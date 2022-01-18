@@ -6,12 +6,9 @@ from rest_framework.test import APIClient
 from restaurant.models import Restaurant
 from restaurant.serializers import RestaurantSerializer
 
+from .utils import sample_restaurant
+
 RECIPES_URL = reverse("restaurant:restaurant-list")
-
-
-def sample_restaurant(title="Barcode"):
-    """Create and return a sample restaurant"""
-    return Restaurant.objects.create(title=title)
 
 
 class PublicRestaurantApiTests(TestCase):

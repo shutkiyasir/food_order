@@ -1,27 +1,7 @@
-from datetime import date
-
-from django.contrib.auth import get_user_model
 from django.test import TestCase
 from restaurant import models
 
-
-def sample_user(email="test@gmail.com", password="testpass"):
-    """Create a sample user"""
-    return get_user_model().objects.create_user(email, password)
-
-
-def sample_restaurant(title="Barcode"):
-    """Create a sample restaurant"""
-    return models.Restaurant.objects.create(title=title)
-
-
-def sample_menu(name="Biryani", restaurant=None):
-    """Create a sample menu"""
-    if not restaurant:
-        restaurant = sample_restaurant()
-    return models.Menu.objects.create(
-        name=name, serve_date=date.today(), restaurant=restaurant
-    )
+from .utils import sample_menu, sample_restaurant, sample_user
 
 
 class ModelTests(TestCase):

@@ -5,15 +5,12 @@ from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
-from restaurant.models import Menu, Restaurant
+from restaurant.models import Menu
 from restaurant.serializers import MenuSerializer
 
+from .utils import sample_restaurant
+
 MENUS_URL = reverse("restaurant:menu")
-
-
-def sample_restaurant(title="Barcode"):
-    """Create and return a sample restaurant"""
-    return Restaurant.objects.create(title=title)
 
 
 class PublicMenusApiTests(TestCase):

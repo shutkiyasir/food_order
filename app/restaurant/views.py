@@ -1,3 +1,5 @@
+from datetime import date, datetime
+
 from rest_framework import generics, viewsets
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
@@ -39,3 +41,20 @@ class CreateVoteView(generics.CreateAPIView):
     queryset = Vote.objects.all()
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
+
+
+class ListWinnerRestaurantView(generics.ListAPIView):
+    """Lists winner restaurant"""
+
+    serializer_class = serializers.RestaurantSerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        serve_date = self.request.query_params.get("serve_date")
+        if serve_date:
+            serve_date = datetime.strptime(serve_date, "%Y-%m-%d")
+        else:
+            serve_date = date.today()
+
+        return Vote.get_winner_restaurant(serve_date)
