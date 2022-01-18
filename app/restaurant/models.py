@@ -39,12 +39,13 @@ class Vote(models.Model):
     @classmethod
     def get_previous_winner_restaurant(cls, serve_date):
         """Filter and return previous two time winner restaurant id"""
-        previous_winner_menus = [
+        previous_highest_votes = [
             cls.objects.filter_highest_vote(serve_date - timedelta(1)),
             cls.objects.filter_highest_vote(serve_date - timedelta(2)),
         ]
+        winner_menus = [vote["menu"] for vote in previous_highest_votes if vote]
         previous_winner_restaurants = list(
-            Menu.objects.filter(id__in=previous_winner_menus).values_list(
+            Menu.objects.filter(id__in=winner_menus).values_list(
                 "restaurant_id", flat=True
             )
         )
