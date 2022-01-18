@@ -8,7 +8,7 @@ from restaurant.serializers import RestaurantSerializer
 
 from .utils import sample_restaurant
 
-RECIPES_URL = reverse("restaurant:restaurant-list")
+RESTAURANTS_URL = reverse("restaurant:restaurant")
 
 
 class PublicRestaurantApiTests(TestCase):
@@ -19,7 +19,7 @@ class PublicRestaurantApiTests(TestCase):
 
     def test_auth_required(self):
         """Test that authentication is required"""
-        res = self.client.get(RECIPES_URL)
+        res = self.client.get(RESTAURANTS_URL)
 
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
@@ -32,12 +32,30 @@ class PrivateRestaurantApiTests(TestCase):
         self.user = get_user_model().objects.create_user("test@gmail.com", "testpass")
         self.client.force_authenticate(self.user)
 
+    def test_create_restaurant(self):
+        """Test creating restaurant failed for employees"""
+        payload = {"title": "Sultan's Dine"}
+        res = self.client.post(RESTAURANTS_URL, payload)
+
+        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
+
+
+class AdminUsersApiTests(TestCase):
+    """Test the private menus API"""
+
+    def setUp(self):
+        self.client = APIClient()
+        self.user = get_user_model().objects.create_superuser(
+            "admin@gmail.com", "testpass"
+        )
+        self.client.force_authenticate(self.user)
+
     def test_retrieve_restaurants(self):
         """Test retrieving a list of restaurants"""
         sample_restaurant()
         sample_restaurant()
 
-        res = self.client.get(RECIPES_URL)
+        res = self.client.get(RESTAURANTS_URL)
 
         restaurants = Restaurant.objects.all().order_by("-id")
         serializer = RestaurantSerializer(restaurants, many=True)
@@ -45,9 +63,9 @@ class PrivateRestaurantApiTests(TestCase):
         self.assertEqual(res.data, serializer.data)
 
     def test_create_restaurant(self):
-        """Test creating restaurant"""
+        """Test creating restaurant for admins"""
         payload = {"title": "Sultan's Dine"}
-        res = self.client.post(RECIPES_URL, payload)
+        res = self.client.post(RESTAURANTS_URL, payload)
 
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         restaurant = Restaurant.objects.get(id=res.data["id"])
