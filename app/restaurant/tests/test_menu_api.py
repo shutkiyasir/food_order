@@ -13,19 +13,6 @@ from .utils import sample_restaurant
 MENUS_URL = reverse("restaurant:menu")
 
 
-class PublicMenusApiTests(TestCase):
-    """Test the publicly available menus API"""
-
-    def setUp(self):
-        self.client = APIClient()
-
-    def test_login_required(self):
-        """Test that login is required to access the endpoint"""
-        res = self.client.get(MENUS_URL)
-
-        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
-
-
 class PrivateMenusApiTests(TestCase):
     """Test the private menus API"""
 
@@ -51,6 +38,37 @@ class PrivateMenusApiTests(TestCase):
         serializer = MenuSerializer(menus, many=True)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data, serializer.data)
+
+    def test_retrieve_menu_for_specific_date(self):
+        """Test retriving menus for a single date"""
+        restaurant = sample_restaurant()
+        current_date = date.today()
+        previous_date = current_date - timedelta(1)
+
+        menu = Menu.objects.create(
+            name="Salad", serve_date=current_date, restaurant=restaurant
+        )
+        menu2 = Menu.objects.create(
+            name="Ramen", serve_date=previous_date, restaurant=restaurant
+        )
+
+        res = self.client.get(MENUS_URL, {"serve_date": current_date})
+
+        serializer1 = MenuSerializer(menu)
+        serializer2 = MenuSerializer(menu2)
+        self.assertIn(serializer1.data, res.data)
+        self.assertNotIn(serializer2.data, res.data)
+
+
+class AdminUsersApiTests(TestCase):
+    """Test the admin menus API"""
+
+    def setUp(self):
+        self.client = APIClient()
+        self.user = get_user_model().objects.create_superuser(
+            "admin@gmail.com", "testpass"
+        )
+        self.client.force_authenticate(self.user)
 
     def test_create_menu(self):
         """Test creating menu"""
@@ -106,23 +124,3 @@ class PrivateMenusApiTests(TestCase):
 
         res = self.client.post(MENUS_URL, payload)
         self.assertNotEqual(res.status_code, status.HTTP_201_CREATED)
-
-    def test_retrieve_menu_for_specific_date(self):
-        """Test retriving menus for a single date"""
-        restaurant = sample_restaurant()
-        current_date = date.today()
-        previous_date = current_date - timedelta(1)
-
-        menu = Menu.objects.create(
-            name="Salad", serve_date=current_date, restaurant=restaurant
-        )
-        menu2 = Menu.objects.create(
-            name="Ramen", serve_date=previous_date, restaurant=restaurant
-        )
-
-        res = self.client.get(MENUS_URL, {"serve_date": current_date})
-
-        serializer1 = MenuSerializer(menu)
-        serializer2 = MenuSerializer(menu2)
-        self.assertIn(serializer1.data, res.data)
-        self.assertNotIn(serializer2.data, res.data)

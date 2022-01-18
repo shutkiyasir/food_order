@@ -6,6 +6,7 @@ from rest_framework.permissions import IsAdminUser, IsAuthenticated
 
 from . import serializers
 from .models import Menu, Restaurant, Vote
+from .permissions import IsAdminUserOrReadOnly
 
 
 class ListCreateRestaurantViewSet(generics.ListCreateAPIView):
@@ -23,7 +24,7 @@ class ListCreateMenuView(generics.ListCreateAPIView):
     serializer_class = serializers.MenuSerializer
     queryset = Menu.objects.all().order_by("-name")
     authentication_classes = (TokenAuthentication,)
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAdminUserOrReadOnly,)
 
     def get_queryset(self):
         """Return objects for specific date only"""

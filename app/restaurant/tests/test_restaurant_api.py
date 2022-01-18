@@ -41,7 +41,7 @@ class PrivateRestaurantApiTests(TestCase):
 
 
 class AdminUsersApiTests(TestCase):
-    """Test the private menus API"""
+    """Test the admin restaurant API"""
 
     def setUp(self):
         self.client = APIClient()
