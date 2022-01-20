@@ -27,11 +27,16 @@ class ListCreateMenuView(generics.ListCreateAPIView):
     permission_classes = (IsAdminUserOrReadOnly,)
 
     def get_queryset(self):
-        """Return objects for specific date only"""
-        serve_date = self.request.query_params.get("serve_date")
+        """Return objects for specific date or restaurant"""
         queryset = self.queryset
+
+        serve_date = self.request.query_params.get("serve_date")
         if serve_date:
             queryset = queryset.filter(serve_date=serve_date)
+
+        restaurant_id = self.request.query_params.get("restaurant_id")
+        if restaurant_id:
+            queryset = queryset.filter(restaurant_id=restaurant_id)
         return queryset.order_by("-name")
 
 
