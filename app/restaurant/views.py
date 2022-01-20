@@ -18,8 +18,18 @@ class ListCreateRestaurantViewSet(generics.ListCreateAPIView):
     permission_classes = (IsAdminUser,)
 
 
+class RetrieveRestaurantView(generics.RetrieveAPIView):
+    """
+    Retrieves single Restaurant detail by id.
+    """
+
+    serializer_class = serializers.RestaurantSerializer
+    queryset = Restaurant.objects.all()
+    lookup_field = "id"
+
+
 class ListCreateMenuView(generics.ListCreateAPIView):
-    """Manage resturant menus in the database"""
+    """Manage restaurant menus in the database"""
 
     serializer_class = serializers.MenuSerializer
     queryset = Menu.objects.all().order_by("-name")
@@ -38,6 +48,16 @@ class ListCreateMenuView(generics.ListCreateAPIView):
         if restaurant_id:
             queryset = queryset.filter(restaurant_id=restaurant_id)
         return queryset.order_by("-name")
+
+
+class RetrieveMenuDetailView(generics.RetrieveAPIView):
+    """
+    Retrieves single Menu detail by id.
+    """
+
+    serializer_class = serializers.MenuSerializer
+    queryset = Menu.objects.all()
+    lookup_field = "id"
 
 
 class CreateVoteView(generics.CreateAPIView):
